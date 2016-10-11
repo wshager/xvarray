@@ -1,0 +1,20 @@
+{
+  "name": "xvarray",
+  "version": "0.0.1",
+  "description": "Arrays for XV",
+  "main": "./lib/xvarray.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wshager/xvarray"
+  },
+  "author": "W.S. Hager",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "immutable": "^3.8.1",
+    "xverr": "0.0.2",
+    "xvseq": "^0.1.0"
+  }
+}
