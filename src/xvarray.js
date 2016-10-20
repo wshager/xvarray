@@ -1,23 +1,24 @@
 import { List } from "immutable";
 
-import { _first, _isSeq, _wrap, _wrapFilter, _wrapReduce, _partialRight, seqOf } from "xvseq";
+import { seq, _first, _isSeq, _wrap, _wrapFilter, _wrapReduce, _partialRight } from "xvseq";
 
 const ListProto = List.prototype;
 
 export function array(...a) {
 	var l = a.length;
 	if(l===0){
-		return seqOf(List());
+		return seq(List());
 	}
 	if(l==1 && _isSeq(a[0])){
-		return seqOf(List(a[0].map(_ => seqOf(_))));
+		return seq(List(a[0].map(_ => seq(_))));
 	}
-	return seqOf(List(a.map(_ => seqOf(_))));
+	return seq(List(a.map(_ => seq(_))));
 }
 
 export const join = array;
 
-export function _isArray(maybe){
+export function _isArray($maybe){
+	let maybe = _first($maybe);
     return !!(maybe && List.isList(maybe));
 }
 
@@ -28,7 +29,7 @@ function _checked($a, fn, ...args){
 		a = $a.first();
 	}
 	if(!_isArray(a)) return error("XPTY0004");
-	return seqOf(fn.apply(a,args));
+	return seq(fn.apply(a,args));
 }
 
 export function head($a) {
@@ -45,7 +46,7 @@ export function size($a) {
 
 export function insertBefore($a,$i,$v) {
 	var i = _first($i) || 1;
-	return _checked($a,ListProto.insert,i-1,seqOf($v));
+	return _checked($a,ListProto.insert,i-1,seq($v));
 }
 
 export function forEach(...args){
@@ -53,7 +54,7 @@ export function forEach(...args){
 	var fn = _first(args[1]);
 	var a = _first(args[0]);
 	if(!_isArray(a)) return error("XPTY0004");
-	return seqOf(a.map(_wrap(fn)));
+	return seq(a.map(_wrap(fn)));
 }
 
 export function filter(...args){
@@ -61,7 +62,7 @@ export function filter(...args){
 	var fn = _first(args[1]);
 	var a = _first(args[0]);
 	if(!_isArray(a)) return error("XPTY0004");
-	return seqOf(a.filter(_wrapFilter(fn)));
+	return seq(a.filter(_wrapFilter(fn)));
 }
 
 export function foldLeft(...args){
@@ -71,7 +72,7 @@ export function foldLeft(...args){
 	var init = _first(args[1]);
 	var a = _first(args[0]);
 	if(!_isArray(a)) return error("XPTY0004");
-	return seqOf(a.reduce(_wrapReduce(fn),init));
+	return seq(a.reduce(_wrapReduce(fn),init));
 }
 
 export function foldRight(...args){
@@ -81,5 +82,5 @@ export function foldRight(...args){
 	var init = _first(args[1]);
 	var a = _first(args[0]);
 	if(!_isArray(a)) return error("XPTY0004");
-	return seqOf(a.reduceRight(_wrapReduce(fn),init));
+	return seq(a.reduceRight(_wrapReduce(fn),init));
 }
