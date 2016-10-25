@@ -1,6 +1,6 @@
 {
   "name": "xvarray",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "Arrays for XV",
   "main": "./lib/xvarray.js",
   "scripts": {
@@ -15,6 +15,6 @@
   "dependencies": {
     "immutable": "^3.8.1",
     "xverr": "0.0.4",
-    "xvseq": "^0.1.1"
+    "xvseq": "^0.1.5"
   }
 }

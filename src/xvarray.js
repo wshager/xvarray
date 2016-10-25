@@ -1,6 +1,6 @@
 import { List } from "immutable";
 
-import { seq, _first, _isSeq, _wrap, _wrapFilter, _wrapReduce, _partialRight } from "xvseq";
+import { seq, _first, _isSeq, _wrap, _wrapReduce, _partialRight } from "xvseq";
 
 const ListProto = List.prototype;
 
@@ -10,7 +10,7 @@ export function array(...a) {
 		return seq(List());
 	}
 	if(l==1 && _isSeq(a[0])){
-		return seq(List(a[0].map(_ => seq(_))));
+		return seq(List(a[0].toArray().map(_ => seq(_))));
 	}
 	return seq(List(a.map(_ => seq(_))));
 }
@@ -62,7 +62,7 @@ export function filter(...args){
 	var fn = _first(args[1]);
 	var a = _first(args[0]);
 	if(!_isArray(a)) return error("XPTY0004");
-	return seq(a.filter(_wrapFilter(fn)));
+	return seq(a.filter(_wrap(fn)));
 }
 
 export function foldLeft(...args){
