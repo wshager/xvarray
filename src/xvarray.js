@@ -2,7 +2,7 @@ import { List } from "immutable";
 
 import { error } from "xverr";
 
-import { seq, toSeq, _first, _isSeq, _wrap, _wrapReduce, _partialRight } from "xvseq";
+import { seq, toSeq, _first, _isSeq, _wrapReduce, _partialRight } from "xvseq";
 
 const ListProto = List.prototype;
 
@@ -12,9 +12,10 @@ export function array(...a) {
 		return seq(List());
 	}
 	if(l==1 && _isSeq(a[0])){
-		return seq(List(a[0].flatten(true).toArray().map(_ => seq(_))));
+		return seq(List(a[0].flatten(true).toArray().map(_ => _isSeq(_) && _.size>1 ? _ : _first(_)
+		)));
 	}
-	return seq(List(a.map(_ => seq(_))));
+	return seq(List(a.map(_ => _isSeq(_) && _.size>1 ? _ : _first(_))));
 }
 
 export function join($a) {
@@ -22,7 +23,7 @@ export function join($a) {
 	return seq($a.reduce(function(pre,cur){
 		var v = _first(cur);
 		if(!_isArray(v)) return error("XPTY0004","One of the items for array:join is not an array.");
-		return pre.merge(v);
+		return pre.concat(v);
 	},List()));
 }
 
@@ -60,7 +61,14 @@ export function subarray($a,$s,$e) {
 
 export function insertBefore($a, $i, $v) {
 	var i = _first($i) || 1;
-	return _checked($a, ListProto.insert, i - 1, seq($v));
+	return _checked($a, ListProto.insert, i - 1, _isSeq($v) && $v.size>1 ? $v : _first($v));
+}
+
+function _wrap(fn,fltr){
+   return function (v,i){
+	   var ret = fn(seq(v));
+	   return !fltr && _isSeq(ret) && ret.size>1 ? ret : _first(ret);
+   };
 }
 
 export function forEach(...args) {
@@ -76,7 +84,7 @@ export function filter(...args) {
 	var fn = _first(args[1]);
 	var a = _first(args[0]);
 	if (!_isArray(a)) return error("XPTY0004");
-	return seq(a.filter(_wrap(fn)));
+	return seq(a.filter(_wrap(fn,true)));
 }
 
 export function foldLeft(...args) {
@@ -113,8 +121,11 @@ export function append(...args) {
 	var a = _first(args[0]);
 	var insert = args[1];
 	if (!_isArray(a)) return error("XPTY0004");
-	//console.log("insert", insert);
-	return seq(insert.isEmpty() ? a : a.push(insert));
+	if(_isSeq(insert)) {
+		if(insert.isEmpty()) return seq(a);
+		insert = insert.size>1 ? insert : _first(insert);
+	}
+	return seq(a.push(insert));
 }
 
 export function reverse(...args) {
@@ -138,7 +149,7 @@ export function flatten($a) {
 			}
 		});
 	};
-	this.forEach(function (v, k) {
+	a.forEach(function (v, k) {
 		if (v && (v._isSeq || _isArray(v) || v instanceof Array) && !v._isNode) {
 			flatDeep(v);
 		} else {
