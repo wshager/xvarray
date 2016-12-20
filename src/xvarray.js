@@ -12,10 +12,9 @@ export function array(...a) {
 		return seq(List());
 	}
 	if(l==1 && _isSeq(a[0])){
-		return seq(List(a[0].flatten(true).toArray().map(_ => _isSeq(_) && _.size>1 ? _ : _first(_)
-		)));
+		return seq(List(a[0].flatten(true).toArray()));
 	}
-	return seq(List(a.map(_ => _isSeq(_) && _.size>1 ? _ : _first(_))));
+	return seq(List(a.map(_ => _isSeq(_) && (_.isEmpty() || _.size>1) ? _ : _first(_))));
 }
 
 export function join($a) {
@@ -67,7 +66,7 @@ export function insertBefore($a, $i, $v) {
 function _wrap(fn,fltr){
    return function (v,i){
 	   var ret = fn(seq(v));
-	   return !fltr && _isSeq(ret) && ret.size>1 ? ret : _first(ret);
+	   return !fltr && _isSeq(ret) && (ret.isEmpty() || ret.size>1) ? ret : _first(ret);
    };
 }
 
@@ -121,8 +120,7 @@ export function append(...args) {
 	var a = _first(args[0]);
 	var insert = args[1];
 	if (!_isArray(a)) return error("XPTY0004");
-	if(_isSeq(insert)) {
-		if(insert.isEmpty()) return seq(a);
+	if(_isSeq(insert) && !insert.isEmpty()) {
 		insert = insert.size>1 ? insert : _first(insert);
 	}
 	return seq(a.push(insert));
