@@ -10,8 +10,10 @@ function assertEq(a,b){
 }
 
 assertEq(xvarray.array(xvseq.seq(1,2,3)),[1,2,3]);
-assertEq(xvarray.tail(xvarray.array("a","b","c")),["b","c"]);
-assertEq(xvarray.insertBefore(xvarray.array("a","b","c"),1,"s"),["s","a","b","c"]);
+var a = xvarray.array("a","b","c");
+assertEq(xvarray.get(a,2),"b");
+assertEq(xvarray.tail(a),["b","c"]);
+assertEq(xvarray.insertBefore(a,1,"s"),["s","a","b","c"]);
 assertEq(xvarray.forEach(xvarray.array(xvseq.seq(1,2,3)),function(_){
 	return xvseq.seq(xvseq._first(_)+1);
 }),xvarray.array(2,3,4).first().toJS());
