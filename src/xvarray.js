@@ -156,3 +156,11 @@ export function flatten($a) {
 	});
 	return toSeq(ret);
 }
+
+export function get($a,$index) {
+	var a = _first($a);
+	// TODO throw
+	var index = _first($index).valueOf() - 1;
+	if(a.isEmpty()) return seq();
+	return seq(a.get(index));
+}
