@@ -12,7 +12,7 @@ export function array(...a) {
 		return seq(List());
 	}
 	if(l==1 && _isSeq(a[0])){
-		return seq(List(a[0].flatten(true).toArray()));
+		return seq(List(a[0].flatten(true).toArray().map(_ => _isSeq(_) && _.size > 1 ? _ : _first(_))));
 	}
 	return seq(List(a.map(_ => _isSeq(_) && (_.isEmpty() || _.size>1) ? _ : _first(_))));
 }
