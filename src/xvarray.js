@@ -1,4 +1,4 @@
-import { List } from "immutable";
+import { PVec, isVec } from "js-persistent-vector";
 
 import { error } from "xverr";
 
@@ -9,17 +9,18 @@ const ListProto = List.prototype;
 export function array(...a) {
 	var l = a.length;
 	if(l===0){
-		return seq(List());
+		return new PVec();
 	}
 	if(l==1 && _isSeq(a[0])){
-		return seq(List(a[0].flatten(true).toArray().map(_ => _isSeq(_) && _.size > 1 ? _ : _first(_))));
+		return new PVec(a[0].map(_ => _isSeq(_) && _.size > 1 ? _ : _first(_)));
 	}
-	return seq(List(a.map(_ => _isSeq(_) && (_.isEmpty() || _.size>1) ? _ : _first(_))));
+	return new PVec(a.map(_ => _isSeq(_) && (_.isEmpty() || _.size > 1) ? _ : _first(_)));
 }
 
 export function join($a) {
 	if ($a === undefined) return error("XPTY0004");
-	return seq($a.reduce(function(pre,cur){
+	// assume a sequence of vectors
+	return $a.reduce(function(pre,cur){
 		var v = _first(cur);
 		if(!_isArray(v)) return error("XPTY0004","One of the items for array:join is not an array.");
 		return pre.concat(v);
@@ -28,7 +29,7 @@ export function join($a) {
 
 export function _isArray($maybe) {
 	let maybe = _first($maybe);
-	return !!(maybe && List.isList(maybe));
+	return !!(maybe && isVec(maybe));
 }
 
 function _checked($a, fn, ...args) {
